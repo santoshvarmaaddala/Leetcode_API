@@ -62,6 +62,27 @@ def userGloabalRank(username: str):
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/leetcode/{username}/totalsolved")
+def userTotalSolved(username: str):
+    try:
+        userDetails = get_user_details(username)
+        dic = {}
+        res = []
+        for i in userDetails["submitStats"]["acSubmissionNum"]:
+            if i["difficulty"] == "All":
+                dic.update({"username":username,f"total questions solved by {username} is":i["count"]})
+            elif i["difficulty"] != "All":
+                res.append({"difficulty":i["difficulty"],"solved":i["count"],"submissions":i["submissions"]})
+        dic.update({"categories":res})
+        return dic
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
